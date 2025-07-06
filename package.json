@@ -1,0 +1,26 @@
+{
+  "name": "rusty-result",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --dts",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts",
+    "fmt": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.13.13",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "eslint": "^9.23.0",
+    "prettier": "^3.5.3",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.28.0",
+    "vitest": "^3.0.9"
+  }
+}
