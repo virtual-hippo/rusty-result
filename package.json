@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup src/index.ts --dts",
-    "test": "vitest",
+    "test": "vitest run",
     "lint": "eslint src --ext .ts",
     "fmt": "prettier --write ."
   },
