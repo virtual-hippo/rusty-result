@@ -1,11 +1,12 @@
 import { it, expect } from "vitest";
-import { ok, err, Result } from "../src/index";
+import type { Result } from "../src/index";
+import { Ok, Err } from "../src/index";
 
 const div = (a: number, b: number): Result<number, string> => {
   if (b === 0) {
-    return err("aaa");
+    return Err("aaa");
   }
-  return ok(a / b);
+  return Ok(a / b);
 };
 
 it("isOk function", () => {
@@ -35,4 +36,26 @@ it("mapErr function", () => {
       .map((v) => v + 1)
       .mapErr((e) => `error is ${e}`)._val,
   ).toBe("error is aaa");
+});
+
+it("andThen, orElse", () => {
+  const toChar = (n: number): Result<string, string> => {
+    if (Number.isInteger(n) && 0 <= n && n < 10) {
+      return Ok(n.toString());
+    } else {
+      return Err("out of range");
+    }
+  };
+
+  const toError = (s: string): Result<string, string[]> => {
+    if (s === "aaa") {
+      return Err(["aaa", "bbb"]);
+    } else {
+      return Ok("1");
+    }
+  };
+
+  expect(div(6, 2).andThen(toChar).orElse(toError)._val).toBe("3");
+  expect(Ok(3).andThen(toChar).orElse(toError)._val).toBe("3");
+  expect(div(6, 0).andThen(toChar).orElse(toError)._val).toStrictEqual(["aaa", "bbb"]);
 });
