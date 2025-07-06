@@ -1,8 +1,8 @@
 import { it, expect } from "vitest";
-import type { IIResult } from "../src/index";
+import type { Result } from "../src/index";
 import { Ok, Err } from "../src/index";
 
-const div = (a: number, b: number): IIResult<number, string> => {
+const div = (a: number, b: number): Result<number, string> => {
   if (b === 0) {
     return Err("aaa");
   }
@@ -39,7 +39,7 @@ it("mapErr function", () => {
 });
 
 it("andThen, orElse", () => {
-  const toChar = (n: number): IResult<string, string> => {
+  const toChar = (n: number): Result<string, string> => {
     if (Number.isInteger(n) && 0 <= n && n < 10) {
       return Ok(n.toString());
     } else {
@@ -47,7 +47,7 @@ it("andThen, orElse", () => {
     }
   };
 
-  const toError = (s: string): IResult<string, string[]> => {
+  const toError = (s: string): Result<string, string[]> => {
     if (s === "aaa") {
       return Err(["aaa", "bbb"]);
     } else {
@@ -58,4 +58,12 @@ it("andThen, orElse", () => {
   expect(div(6, 2).andThen(toChar).orElse(toError)._val).toBe("3");
   expect(Ok(3).andThen(toChar).orElse(toError)._val).toBe("3");
   expect(div(6, 0).andThen(toChar).orElse(toError)._val).toStrictEqual(["aaa", "bbb"]);
+});
+
+it("isOk function", () => {
+  const Result = div(4, 2);
+  const v = Result.isOk() ? Result._val + 2 : Result._val; // should not throw
+  expect(v).toBe(4);
+  expect(div(4, 2).isOk()).toBe(true);
+  expect(div(4, 0).isOk()).toBe(false);
 });
