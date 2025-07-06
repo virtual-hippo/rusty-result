@@ -18,6 +18,9 @@ interface IResult<T, E> {
   readonly mapErr: <F>(mapper: (val: E) => F) => Result<T, F>;
   readonly andThen: <U, F>(mapper: (val: T) => Result<U, F>) => Result<U, E | F>;
   readonly orElse: <U, F>(mapper: (val: E) => Result<U, F>) => Result<T | U, F>;
+
+  readonly unwrap: () => T;
+  readonly unwrapOr: <U>(defaultValue: U) => T | U;
 }
 
 export type Ok<T> = IResult<T, never> & IOk<T>;
@@ -43,6 +46,12 @@ export function Ok<T>(val: T): Result<T, never> {
     orElse: function () {
       return this;
     },
+    unwrap: function (): T {
+      return this._val;
+    },
+    unwrapOr: function (): T {
+      return this._val;
+    },
   };
 }
 
@@ -64,6 +73,15 @@ export function Err<E>(val: E): Result<never, E> {
     },
     orElse: function <U, F>(mapper: (val: E) => Result<U, F>): Result<U, F> {
       return mapper(this._val);
+    },
+    unwrap: function (): never {
+      const valStr = typeof this._val === 'object' && this._val !== null 
+        ? JSON.stringify(this._val) 
+        : String(this._val);
+      throw new Error(`Unwrap called on Err: ${valStr}`);
+    },
+    unwrapOr: function <U>(defaultValue: U): U {
+      return defaultValue;
     },
   };
 }

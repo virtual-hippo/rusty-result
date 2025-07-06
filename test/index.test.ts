@@ -67,3 +67,25 @@ it("isOk function", () => {
   expect(div(4, 2).isOk()).toBe(true);
   expect(div(4, 0).isOk()).toBe(false);
 });
+
+it("unwrap function", () => {
+  expect(div(4, 2).unwrap()).toBe(2);
+  expect(Ok(42).unwrap()).toBe(42);
+  expect(Ok("hello").unwrap()).toBe("hello");
+
+  expect(() => div(4, 0).unwrap()).toThrow("Unwrap called on Err: aaa");
+  expect(() => Err("error message").unwrap()).toThrow("Unwrap called on Err: error message");
+
+  const errVal = { type: "Unwrap called on Err", message: "test" } as const;
+  expect(() => Err(errVal).unwrap()).toThrow(`Unwrap called on Err: ${JSON.stringify(errVal)}`);
+});
+
+it("unwrapOr function", () => {
+  expect(div(4, 2).unwrapOr(0)).toBe(2);
+  expect(Ok(42).unwrapOr(0)).toBe(42);
+  expect(Ok("hello").unwrapOr("default")).toBe("hello");
+
+  expect(div(4, 0).unwrapOr(0)).toBe(0);
+  expect(Err("error").unwrapOr(100)).toBe(100);
+  expect(Err("error").unwrapOr("default")).toBe("default");
+});
