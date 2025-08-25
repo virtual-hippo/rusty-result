@@ -27,14 +27,14 @@ export type Ok<T> = IResult<T, never> & IOk<T>;
 export type Err<E> = IResult<never, E> & IErr<E>;
 export type Result<T, E> = Ok<T> | Err<E>;
 
-export function Ok<T>(val: T): Result<T, never> {
+export function Ok<T>(val: T): Ok<T> {
   return {
     _ok: true,
     _err: false,
     _val: val,
     isOk: (): this is Ok<T> => true,
     isErr: (): this is Err<never> => false,
-    map: function <U>(mapper: (val: T) => U): Result<U, never> {
+    map: function <U>(mapper: (val: T) => U): Ok<U> {
       return Ok(mapper(this._val));
     },
     mapErr: function () {
@@ -55,7 +55,7 @@ export function Ok<T>(val: T): Result<T, never> {
   };
 }
 
-export function Err<E>(val: E): Result<never, E> {
+export function Err<E>(val: E): Err<E> {
   return {
     _ok: false,
     _err: true,
@@ -65,7 +65,7 @@ export function Err<E>(val: E): Result<never, E> {
     map: function () {
       return this;
     },
-    mapErr: function <F>(mapper: (val: E) => F): Result<never, F> {
+    mapErr: function <F>(mapper: (val: E) => F): Err<F> {
       return Err(mapper(this._val));
     },
     andThen: function () {
@@ -75,9 +75,8 @@ export function Err<E>(val: E): Result<never, E> {
       return mapper(this._val);
     },
     unwrap: function (): never {
-      const valStr = typeof this._val === 'object' && this._val !== null 
-        ? JSON.stringify(this._val) 
-        : String(this._val);
+      const valStr =
+        typeof this._val === "object" && this._val !== null ? JSON.stringify(this._val) : String(this._val);
       throw new Error(`Unwrap called on Err: ${valStr}`);
     },
     unwrapOr: function <U>(defaultValue: U): U {
